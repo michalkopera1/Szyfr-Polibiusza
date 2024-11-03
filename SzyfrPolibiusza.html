@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szyfr Polibiusza</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 60px;
+            background-color: #3bb91c;
+        }
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: #dd0404;
+            padding: 120px;
+            box-shadow: 0 0 20px #0756ff;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            font-size: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        select, button {
+            padding: 15px;
+            font-size: 25px;
+            margin-top: 15px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 25px;
+            font-size: 25px;
+            word-wrap: break-word;
+            background: #1b72c9;
+            padding: 25px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #6f7429;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid #0e0c85;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Szyfr Polibiusza</h1>
+        <label for="operation">Wybierz: Szyfrowanie/Deszyfrowanie</label>
+        <select id="operation">
+            <option value="encrypt">Szyfrowanie</option>
+            <option value="decrypt">Deszyfrowanie</option>
+        </select>
+        <br>
+        <label for="inputText">Wprowadź tekst:</label>
+        <textarea id="inputText" placeholder="Wpisz tekst tutaj..."></textarea>
+        <button onclick="processText()">Wykonaj</button>
+        <div class="result" id="resultSection" style="display:none;">
+            <h2>Wynik:</h2>
+            <p id="outputText"></p>
+        </div>
+    </div>
+    <div class="footer">
+        Michał Kopera 15479 LAB1/2/ADN
+    </div>
+
+    <script>
+        function generujKwadrat() {
+            const alfabet = ['A', 'Ą', 'B', 'C', 'Ć', 'D',
+                             'E', 'Ę', 'F', 'G', 'H', 'I',
+                             'J', 'K', 'L', 'Ł', 'M', 'N',
+                             'Ń', 'O', 'Ó', 'P', 'Q', 'R',
+                             'S', 'Ś', 'T', 'U', 'V', 'W',
+                             'X', 'Y', 'Z', 'Ź', 'Ż'];
+
+            const kwadrat = {};
+            let index = 0;
+
+            for (let wiersz = 1; wiersz <= 6; wiersz++) {
+                for (let kolumna = 1; kolumna <= 6; kolumna++) {
+                    if (index < alfabet.length) {
+                        kwadrat[alfabet[index]] = `${wiersz}${kolumna}`;
+                        kwadrat[`${wiersz}${kolumna}`] = alfabet[index];
+                        index++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            return kwadrat;
+        }
+
+        function szyfruj(tekst, kwadrat) {
+            let wynik = '';
+            for (let znak of tekst.toUpperCase()) {
+                if (kwadrat[znak]) {
+                    wynik += kwadrat[znak] + ' ';
+                } else if (znak === ' ') {
+                    wynik += '/ ';
+                } else {
+                    wynik += znak + ' ';
+                }
+            }
+            return wynik.trim();
+        }
+
+        function deszyfruj(tekst, kwadrat) {
+            let wynik = '';
+            const slowa = tekst.trim().split(/\s+/);
+            for (let kod of slowa) {
+                if (kod === '/') {
+                    wynik += ' ';
+                } else if (kwadrat[kod]) {
+                    wynik += kwadrat[kod];
+                } else {
+                    wynik += kod;
+                }
+            }
+            return wynik;
+        }
+
+        function processText() {
+            const kwadrat = generujKwadrat();
+            const operation = document.getElementById('operation').value;
+            const inputText = document.getElementById('inputText').value;
+            let outputText = '';
+
+            if (inputText.trim() === '') {
+                alert('Proszę wprowadzić tekst.');
+                return;
+            }
+
+            if (operation === 'encrypt') {
+                outputText = szyfruj(inputText, kwadrat);
+            } else {
+                outputText = deszyfruj(inputText, kwadrat);
+            }
+
+            document.getElementById('outputText').innerText = outputText;
+            document.getElementById('resultSection').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
